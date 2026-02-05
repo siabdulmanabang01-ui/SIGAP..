@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intro Luka Bakar</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#dbeafe,#eff6ff);
+  padding:20px;
+  color:#003366;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+}
+
+h1{
+  text-align:center;
+  color:#0056b3;
+  margin-bottom:30px;
+}
+
+/* ====== TABLE STYLE ====== */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-bottom:30px;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+th,td{
+  padding:14px;
+  text-align:left;
+}
+
+th{
+  color:white;
+  font-size:18px;
+}
+
+/* warna tabel */
+.dewasa th{background:#007bff;}
+.anak th{background:#28a745;}
+.syok th{background:#ff5733;}
+
+.dewasa td{background:#eaf4ff;}
+.anak td{background:#e9f9ee;}
+.syok td{background:#ffe9e3;}
+
+.startBtn{
+  display:block;
+  margin:40px auto;
+  padding:18px 40px;
+  font-size:18px;
+  font-weight:bold;
+  border:none;
+  border-radius:12px;
+  background:#0056b3;
+  color:white;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.startBtn:hover{
+  transform:scale(1.08);
+  background:#003f82;
+}
+
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>🔥 SIGAP </h1>
+
+<h1> (SISTEM IDENTIFIKASI GAWAT DAN ANALIIS PASIEN LUKA BAKAR) </h1>
+
+<!-- TABEL 1 -->
+<table class="dewasa">
+<tr><th colspan="2"> Penjelasan Luka Bakar</th></tr>
+<tr><td>Apa Itu Luka Bakar?</td><td>Luka bakar adalah kerusakan jaringan tubuh, terutama kulit, 
+  yang disebabkan oleh paparan panas, api, air panas, listrik, bahan kimia, radiasi, maupun gesekan. 
+  Luka bakar dapat bersifat ringan hingga berat dan berisiko menimbulkan komplikasi seperti infeksi, dehidrasi, hingga gangguan fungsi organ.</td></tr>
+<tr><td>Apa Tanda Dan Gejalanya?</td><td>Nyeri atau rasa panas pada area luka,Kemerahan atau perubahan warna kulit,Lepuh atau kulit terkelupas,Pembengkakan,Pada luka berat: syok, demam, dan tanda infeksi</td></tr>
+<tr><td>Metode Apa Yang Di Gunakan Utuk Menghitung Luas Luka Bakar</td><td>metode yang digunaan adalah rumus Rule Of Nine unutuk pasien dewasa dan Lund and Browder Chart</td></tr>
+<tr><td>Risiko</td><td>Dehidrasi, gagal organ, syok hipovolemik</td></tr>
+</table>
+
+<!-- TABEL 2 -->
+<table class="anak">
+<tr><th colspan="2">Penjelasan Resusitasi Cairan</th></tr>
+<tr><td>Pengertian Resusitasi Cairan</td><td>Resusitasi cairan adalah pemberian cairan intravena secara cepat dan terukur untuk menggantikan cairan 
+  tubuh yang hilang akibat luka bakar. 
+  Tujuannya adalah mencegah syok hipovolemik, menjaga perfusi jaringan, dan mempertahankan fungsi organ vital.</td></tr>
+<tr><td>Mengapa Resusitasi Cairan Penting</td><td>Pada luka bakar, terjadi:Kehilangan cairan melalui permukaan luka,Peningkatan permeabilitas kapiler,Perpindahan cairan ke jaringan (edema),Jika tidak ditangani, dapat menyebabkan syok, gagal ginjal, hingga kematian.</td></tr>
+<tr><td>Indikasi Resusitasi Cairan</td><td>Dewasa: luka bakar ≥ 15% TBSA,Anak: luka bakar ≥ 10% TBSA,Luka bakar dengan syok,Luka bakar akibat listrik atau inhalasi</td></tr>
+<tr><td>Monitoring Keberhasilan Resusitasi</td><td>Parameter utama:Produksi urine
+Dewasa: ≥ 0,5 mL/kg/jam
+Anak: ≥ 1 mL/kg/jam
+Bayi: ≥ 2 mL/kg/jam
+Tanda vital stabil
+3.Kesadaran baik
+4.Tidak ada tanda kelebihan cairan</td></tr>
+</table>
+
+<!-- TABEL 3 -->
+<table class="syok">
+<tr><th colspan="2">penjelasan Syok Hipovolemik</th></tr>
+<tr><td>Pengertian Syok Hipovolemik</td><td>Syok hipovolemik adalah kondisi kegawatdaruratan akibat penurunan volume cairan intravaskular secara signifikan, sehingga aliran darah ke jaringan dan organ vital tidak adekuat. Pada pasien luka bakar, syok hipovolemik merupakan penyebab utama morbiditas dan mortalitas pada fase awal.</td></tr>
+<tr><td>Penyebab</td><td>Kehilangan cairan masif akibat luka bakar</td></tr>
+<tr><td>Tanda Awal</td><td>Takikardia, hipotensi, kulit pucat dingin</td></tr>
+<tr><td>Hubungan Luka Bakar dengan Syok Hipovolemik</td><td>Pada luka bakar berat terjadi:,Kehilangan cairan plasma melalui permukaan luka,Peningkatan permeabilitas kapiler
+Perpindahan cairan dari intravaskular ke interstisial,Penurunan volume darah efektif</td></tr>
+<tr><td>Pencegahan</td><td>Resusitasi cairan cepat dan tepat,Penilaian luas dan derajat luka bakar secara cepat,Monitoring ketat tanda vital dan urine output,Penyesuaian cairan berdasarkan respon klinis</td></tr>
+</table>
+
+<button class="startBtn" onclick="location.href='menu.html'">
+START ▶ Masuk Menu Kalkulator
+</button>
+
+</div>
+</body>
+</html>
