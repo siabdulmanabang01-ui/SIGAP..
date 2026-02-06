@@ -3,295 +3,322 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kalkulator Luka Bakar - Rule of Nine</title>
+  <title>Kalkulator Luka Bakar - SIGAP Dewasa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
   <style>
+    :root {
+      --primary: #0056b3;
+      --tosca: #2a9d8f;
+      --glass: rgba(255, 255, 255, 0.95);
+    }
+
     body {
       font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #dbeafe, #eff6ff);
+      background: linear-gradient(rgba(219, 234, 254, 0.8), rgba(219, 234, 254, 0.8)), 
+                  url('https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=1600');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
       color: #333;
       margin: 0;
       padding: 0;
       text-align: center;
-      overflow-x: hidden;
     }
 
-    h1, h2 {
-      color: #0056b3;
-    }
-
+    /* Section Welcome */
     #welcome {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      transition: opacity 1s ease;
+      padding: 20px;
+    }
+
+    #welcome h1 {
+      color: var(--primary);
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
     }
 
     #welcome img {
-      width: 280px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-      transition: transform 0.4s ease;
+      width: 100%;
+      max-width: 280px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      margin: 20px 0;
     }
 
-    #welcome img:hover {
-      transform: scale(1.05);
-    }
-
-    #welcome button {
-      margin-top: 25px;
-      padding: 14px 25px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    #welcome button:hover {
-      background-color: #0056b3;
-      transform: scale(1.08);
-    }
-
+    /* Container Kalkulator */
     #calculator {
       display: none;
       max-width: 850px;
-      margin: 50px auto;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin: 40px auto;
+      background: var(--glass);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
       padding: 30px;
-      animation: fadeIn 1s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
     }
 
     .body-map {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
       margin: 25px auto;
     }
 
     .area {
-      background-color: #eef2f7;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      padding: 15px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
-      font-weight: normal;
+      font-size: 0.85rem;
     }
 
     .area:hover {
-      background-color: #d0e3ff;
-      transform: scale(1.05);
+      border-color: var(--primary);
+      background: #f0f7ff;
     }
 
     .selected {
-      background-color: #ffcccc;
-      border: 3px solid #000;
+      background-color: #ffe3e3 !important;
+      border: 2px solid #ff4d4d !important;
       font-weight: bold;
+      transform: scale(0.98);
     }
 
     input[type="number"] {
-      width: 100%;
+      width: 80%;
       max-width: 300px;
-      padding: 10px;
-      margin: 10px 0 20px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      padding: 12px;
+      margin: 15px 0;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 50px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      margin: 10px;
+    }
+
+    .btn-start { background: var(--primary); color: white; font-size: 1.1rem; }
+    .btn-calc { background: var(--tosca); color: white; }
+    .btn-reset { background: #e63946; color: white; }
+    .btn:hover { opacity: 0.9; transform: translateY(-3px); }
+
+    /* Hasil Tampilan Persis Foto */
+    #fluid-result {
+      margin-top: 30px;
+      text-align: left;
+      display: none;
+    }
+
+    .result-title {
+      font-weight: bold;
+      color: var(--tosca);
+      margin: 20px 0 10px 0;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 5px;
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+      line-height: 1.8;
+    }
+
+    .result-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    .result-table th {
+      background: var(--tosca);
+      color: white;
+      padding: 12px;
       text-align: center;
     }
 
-    .button-container {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
+    .result-table td {
+      padding: 10px;
+      border: 1px solid #eee;
+      text-align: center;
+      word-break: break-word;
     }
 
-    button {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      color: #fff;
-      font-weight: bold;
-      transition: all 0.3s ease;
-    }
-
-    .calc-btn {
-      background-color: #007bff;
-    }
-
-    .calc-btn:hover {
-      background-color: #0056b3;
-      transform: scale(1.05);
-    }
-
-    .reset-btn {
-      background-color: #dc3545;
-    }
-
-    .reset-btn:hover {
-      background-color: #c82333;
-      transform: scale(1.05);
-    }
-
-    #fluid-result {
-      font-size: 16px;
-      margin-top: 20px;
-      background: #f1f8ff;
+    .summary-box {
+      background-color: #f0f9f8;
+      border-left: 5px solid var(--tosca);
       padding: 15px;
-      border-radius: 10px;
-      display: inline-block;
-      text-align: left;
+      margin-top: 10px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
     }
 
-    footer {
-      margin-top: 50px;
-      font-size: 13px;
-      color: #666;
+    @media (max-width: 600px) {
+      .body-map { grid-template-columns: repeat(2, 1fr); }
+      .result-table { font-size: 0.8rem; }
+      .result-table th, .result-table td { padding: 8px 4px; }
     }
   </style>
 </head>
 <body>
 
   <section id="welcome">
-    <h1>🔥 Kalkulator Luka Bakar (Rule of Nine)</h1>
-    <p>Membantu perawat menghitung kebutuhan cairan pasien luka bakar secara cepat dan akurat.</p>
+    <h1>🔥 SIGAP DEWASA</h1>
+    <p>Sistem Identifikasi Gawat & Analisis Pasien Luka Bakar</p>
     <img src="https://i.ibb.co/sdzmsJdh/manusia.jpg" alt="Ilustrasi tubuh manusia" />
-    <button onclick="startCalculator()">Mulai Hitung Luka Bakar</button>
+    <button class="btn btn-start" onclick="startCalculator()">Mulai Perhitungan</button>
   </section>
 
   <section id="calculator">
-    <h2>Perhitungan Luas Luka Bakar</h2>
-    <p>Klik bagian tubuh yang mengalami luka bakar.</p>
+    <h2>Pilih Area Luka Bakar</h2>
+    <p style="font-size: 0.9rem; color: #666;">Klik pada bagian tubuh yang terkena:</p>
 
     <div class="body-map">
-      <div class="area" data-value="4.5"><div class="icon">🧠</div>Kepala Depan (4.5%)</div>
-        <div class="area" data-value="9"><div class="icon">❤️</div>Dada Depan (9%)</div>
-        <div class="area" data-value="9"><div class="icon">🫀</div>Perut Depan (9%)</div>
-        <div class="area" data-value="4.5"><div class="icon">💪</div>Lengan Kanan Depan (4.5%)</div>
-        <div class="area" data-value="4.5"><div class="icon">💪</div>Lengan Kiri Depan (4.5%)</div>
-        <div class="area" data-value="9"><div class="icon">🦵</div>Kaki Kanan Depan (9%)</div>
-        <div class="area" data-value="9"><div class="icon">🦵</div>Kaki Kiri Depan (9%)</div>
-        <div class="area" data-value="1"><div class="icon">⚡</div>Area Kemaluan (1%)</div>
-        <div class="area" data-value="4.5"><div class="icon">🧠</div>Kepala Belakang (4.5%)</div>
-        <div class="area" data-value="9"><div class="icon">🦴</div>Punggung Atas (9%)</div>
-        <div class="area" data-value="9"><div class="icon">🦴</div>Punggung Bawah (9%)</div>
-        <div class="area" data-value="4.5"><div class="icon">💪</div>Lengan Kanan Belakang (4.5%)</div>
-        <div class="area" data-value="4.5"><div class="icon">💪</div>Lengan Kiri Belakang (4.5%)</div>
-        <div class="area" data-value="9"><div class="icon">🦵</div>Kaki Kanan Belakang (9%)</div>
-        <div class="area" data-value="9"><div class="icon">🦵</div>Kaki Kiri Belakang (9%)</div>
+      <div class="area" data-value="4.5">Kepala Depan (4.5%)</div>
+      <div class="area" data-value="4.5">Kepala Belakang (4.5%)</div>
+      <div class="area" data-value="9">Dada Depan (9%)</div>
+      <div class="area" data-value="9">Perut Depan (9%)</div>
+      <div class="area" data-value="9">Punggung Atas (9%)</div>
+      <div class="area" data-value="9">Punggung Bawah (9%)</div>
+      <div class="area" data-value="4.5">Lengan Kanan Dp (4.5%)</div>
+      <div class="area" data-value="4.5">Lengan Kanan Bk (4.5%)</div>
+      <div class="area" data-value="4.5">Lengan Kiri Dp (4.5%)</div>
+      <div class="area" data-value="4.5">Lengan Kiri Bk (4.5%)</div>
+      <div class="area" data-value="9">Kaki Kanan Dp (9%)</div>
+      <div class="area" data-value="9">Kaki Kanan Bk (9%)</div>
+      <div class="area" data-value="9">Kaki Kiri Dp (9%)</div>
+      <div class="area" data-value="9">Kaki Kiri Bk (9%)</div>
+      <div class="area" data-value="1">Genital (1%)</div>
     </div>
 
-    <label for="weight"><b>Berat Badan (kg):</b></label><br />
-    <input type="number" id="weight" min="1" placeholder="Masukkan berat badan" />
+    <label><b>Berat Badan Pasien (kg):</b></label><br>
+    <input type="number" id="weight" placeholder="Contoh: 60">
 
-    <div class="button-container">
-      <button class="calc-btn" onclick="calculateFluids()">Hitung Cairan</button>
-      <button class="reset-btn" onclick="resetSelection()">Reset</button>
+    <div>
+      <button class="btn btn-calc" onclick="calculateFluids()">Hitung Cairan</button>
+      <button class="btn btn-reset" onclick="resetSelection()">Reset</button>
     </div>
 
-    <h3>Hasil Perhitungan</h3>
-    <p id="fluid-result"></p>
+    <div id="fluid-result">
+      <div class="result-title">📋 Hasil Perhitungan</div>
+      <div id="text-results"></div>
+
+      <div class="result-title">📊 Rincian Jenis & Jumlah Cairan</div>
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>Kategori</th>
+            <th>Jenis Cairan</th>
+            <th>Jumlah (mL)</th>
+            <th>Keterangan</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+
+      <div class="result-title">📑 Ringkasan Waktu Pemberian</div>
+      <div class="summary-box" id="summary-text"></div>
+    </div>
   </section>
-
-  <footer>© 2025 Kalkulator Luka Bakar – Didesain untuk edukasi tenaga kesehatan</footer>
 
   <script>
     function startCalculator() {
       document.getElementById("welcome").style.display = "none";
       document.getElementById("calculator").style.display = "block";
+      window.scrollTo(0,0);
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const areas = document.querySelectorAll(".area");
-      areas.forEach((area) => {
-        area.addEventListener("click", () => {
-          area.classList.toggle("selected");
-        });
+    // Toggle seleksi area
+    document.querySelectorAll(".area").forEach(area => {
+      area.addEventListener("click", () => {
+        area.classList.toggle("selected");
       });
     });
 
     function calculateFluids() {
-      const weight = document.getElementById("weight").value;
-      const selectedAreas = document.querySelectorAll(".area.selected");
-      let totalPercent = 0;
+      const weight = parseFloat(document.getElementById("weight").value);
+      const selected = document.querySelectorAll(".area.selected");
+      let tbsa = 0;
 
-      selectedAreas.forEach((area) => {
-        totalPercent += parseFloat(area.dataset.value);
-      });
+      selected.forEach(a => tbsa += parseFloat(a.dataset.value));
 
-      if (!weight || weight <= 0) {
-        alert("Masukkan berat badan yang valid!");
-        return;
-      }
+      if (!weight || weight <= 0) { alert("Masukkan berat badan!"); return; }
+      if (tbsa === 0) { alert("Pilih area luka!"); return; }
 
-      if (totalPercent === 0) {
-        alert("Pilih setidaknya satu area luka bakar!");
-        return;
-      }
+      // Parkland Formula (4ml)
+      const total24h = 4 * weight * tbsa;
+      const h8 = total24h / 2;
+      const h16_split = (total24h / 2) / 2;
+      const koloid = tbsa > 30 ? Math.round(0.5 * weight * tbsa) : 0; // Logika koloid tambahan
 
-      const totalFluids = 4 * weight * totalPercent;
-      const first8Hours = totalFluids / 2;
-      const next16Hours = totalFluids / 2;
-
-      let fluidType = "";
-      if (totalPercent < 15) {
-        fluidType = `
-        💧 <b>Kristaloid ringan:</b><br>
-        • <b>Ringer Laktat (RL):</b> 1–2 mL/kg/jam.<br>
-        • <b>NaCl 0.9%:</b> alternatif jika RL tidak tersedia.<br>
-        • <i>Digunakan untuk luka bakar ringan tanpa syok.</i>
-        `;
-      } else if (totalPercent >= 15 && totalPercent <= 30) {
-        fluidType = `
-        💉 <b>Kristaloid utama:</b><br>
-        • <b>Ringer Laktat (RL):</b> 4 mL/kg/% luas luka bakar (Parkland formula).<br>
-        • <b>Dextrose 5%:</b> tambahkan bila anak-anak atau hipoglikemia.<br>
-        • <i>½ cairan diberikan 8 jam pertama, sisanya 16 jam berikutnya.</i>
-        `;
-      } else if (totalPercent > 30 && totalPercent <= 50) {
-        fluidType = `
-        🧴 <b>Kombinasi cairan:</b><br>
-        • <b>Ringer Laktat:</b> 2–4 mL/kg/% luas luka bakar.<br>
-        • <b>Koloid (Gelatin/Albumin 5%):</b> 0.5–1 mL/kg/% luas luka bakar, dimulai setelah 8–12 jam.<br>
-        • <i>Untuk mempertahankan tekanan onkotik plasma.</i>
-        `;
-      } else {
-        fluidType = `
-        💊 <b>Koloid dominan + Kristaloid pendukung:</b><br>
-        • <b>Albumin 5%:</b> 1 mL/kg/% luas luka bakar (setelah 12–24 jam).<br>
-        • <b>Ringer Laktat:</b> 2 mL/kg/% luas luka bakar.<br>
-        • <i>Untuk luka bakar berat dengan kehilangan cairan besar atau syok.</i>
-        `;
-      }
-
-      document.getElementById("fluid-result").innerHTML = `
-        🔥 <b>Total luas luka bakar:</b> ${totalPercent.toFixed(1)}%<br>
-        💧 <b>Kebutuhan cairan total (24 jam):</b> ${totalFluids.toLocaleString()} mL<br>
-        ⏱️ <b>8 jam pertama:</b> ${first8Hours.toLocaleString()} mL<br>
-        ⏱️ <b>16 jam berikutnya:</b> ${next16Hours.toLocaleString()} mL<br><br>
-        🧴 <b>Jenis & Dosis Cairan Disarankan:</b><br>${fluidType}
+      // 1. Teks Hasil Atas
+      document.getElementById("text-results").innerHTML = `
+        <b>Luas Luka Bakar (TBSA):</b> ${tbsa}%<br>
+        <b>Faktor Parkland:</b> 4 mL/kg/%TBSA<br>
+        <b>0–8 jam pertama:</b> ${h8.toLocaleString()} mL (Ringer Laktat (RL))<br>
+        <b>8–16 jam:</b> ${h16_split.toLocaleString()} mL (Ringer Laktat (RL))<br>
+        <b>16–24 jam:</b> ${h16_split.toLocaleString()} mL (Ringer Laktat (RL))
       `;
+
+      // 2. Tabel Rincian
+      document.getElementById("table-body").innerHTML = `
+        <tr>
+          <td>Kristaloid</td>
+          <td>Ringer Laktat (RL)</td>
+          <td>${total24h.toLocaleString()}</td>
+          <td>Resusitasi Parkland (4 mL/kg/%TBSA)</td>
+        </tr>
+        <tr>
+          <td>Koloid</td>
+          <td>Albumin 5%</td>
+          <td>${koloid > 0 ? koloid.toLocaleString() : '-'}</td>
+          <td>${koloid > 0 ? 'Diberikan setelah 24 jam pertama' : 'Tidak wajib (TBSA < 30%)'}</td>
+        </tr>
+        <tr style="font-weight:bold; background:#f9f9f9">
+          <td>Total</td>
+          <td>Estimasi Total</td>
+          <td>${(total24h + koloid).toLocaleString()}</td>
+          <td>Total Kristaloid + Koloid</td>
+        </tr>
+      `;
+
+      // 3. Ringkasan Kotak
+      document.getElementById("summary-text").innerText = 
+        `TBSA: ${tbsa}%\n` +
+        `Faktor: 4 mL/kg/%TBSA\n` +
+        `0-8 jam: ${h8.toLocaleString()} mL\n` +
+        `8-16 jam: ${h16_split.toLocaleString()} mL\n` +
+        `16-24 jam: ${h16_split.toLocaleString()} mL\n` +
+        `Koloid: ${koloid > 0 ? koloid + ' mL' : '-'}\n` +
+        `Total Estimasi: ${(total24h + koloid).toLocaleString()} mL`;
+
+      document.getElementById("fluid-result").style.display = "block";
+      document.getElementById("fluid-result").scrollIntoView({ behavior: 'smooth' });
     }
 
     function resetSelection() {
-      document.querySelectorAll(".area").forEach((area) => {
-        area.classList.remove("selected");
-      });
+      document.querySelectorAll(".area").forEach(a => a.classList.remove("selected"));
       document.getElementById("weight").value = "";
-      document.getElementById("fluid-result").innerHTML = "";
+      document.getElementById("fluid-result").style.display = "none";
     }
   </script>
 </body>
