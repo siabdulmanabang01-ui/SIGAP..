@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Kalkulator Risiko Syok Hipovolemik</title>
+<title>Kalkulator Medis Resusitasi Cairan</title>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
   :root{
@@ -14,327 +14,248 @@
   }
   body{
     font-family:'Inter',sans-serif;
-    background:var(--bg);
-    color:#111;
-    margin:0;
-    transition:opacity 0.4s ease;
+    background:var(--bg); color:#111; margin:0;
+    transition: opacity 0.3s ease;
   }
   header{
-    background:var(--grad);
-    color:#fff;
-    padding:16px 24px;
+    background:var(--grad); color:#fff; padding:16px 24px;
     box-shadow:0 4px 20px rgba(0,0,0,0.15);
-    display:flex;justify-content:space-between;align-items:center;
+    display:flex; justify-content:space-between; align-items:center;
   }
-  h1{font-size:20px;margin:0}
-  .tabs,.sub-tabs{
-    display:flex;justify-content:center;gap:8px;background:#f4f0ff;padding:10px;
+  h1{font-size:18px; margin:0}
+  .tabs{
+    display:flex; justify-content:center; gap:8px; background:#f4f0ff; padding:10px;
   }
-  .tab,.sub-tab{
-    border:none;border-radius:12px;padding:10px 18px;
-    cursor:pointer;background:#fff;color:var(--muted);
+  .tab{
+    border:none; border-radius:12px; padding:10px 18px;
+    cursor:pointer; background:#fff; color:var(--muted);
     box-shadow:0 2px 6px rgba(0,0,0,0.05);
-    display:flex;align-items:center;gap:6px;transition:all 0.3s ease;
+    display:flex; align-items:center; gap:6px; transition:0.3s;
   }
-  .tab.active,.sub-tab.active{
-    background:var(--grad);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.2);
-  }
-  .container{max-width:950px;margin:20px auto;padding:0 16px;transition:opacity 0.4s ease;}
+  .tab.active{ background:var(--grad); color:#fff; }
+  .container{ max-width:900px; margin:20px auto; padding:0 16px; }
   .card{
-    background:var(--card);border-radius:14px;padding:20px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.08);
+    background:var(--card); border-radius:14px; padding:20px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.08); margin-bottom: 20px;
   }
-  label{display:block;font-size:14px;margin-top:10px;color:var(--muted)}
-  input,textarea,select{
-    width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:5px;
+  .hidden { display: none; }
+  label{ display:block; font-size:13px; margin-top:12px; color:var(--muted); font-weight:600; }
+  input, select{
+    width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; margin-top:5px; box-sizing: border-box;
   }
   .btn{
-    background:var(--grad);color:#fff;border:none;border-radius:10px;padding:10px 14px;
-    display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:12px;
-    box-shadow:0 4px 10px rgba(167,139,250,0.3);transition:transform .2s;
+    background:var(--grad); color:#fff; border:none; border-radius:10px; padding:12px;
+    display:flex; align-items:center; gap:6px; cursor:pointer; margin-top:15px;
+    width:100%; justify-content:center; font-weight:bold;
   }
-  .btn:hover{transform:scale(1.03)}
-  .hidden{display:none}
-  .tooltip{position:relative;display:inline-block;cursor:pointer;margin-left:4px;}
-  .tooltip .tooltiptext{
-    visibility:hidden;width:180px;background:rgba(0,0,0,0.8);color:#fff;text-align:center;
-    border-radius:8px;padding:6px;position:absolute;z-index:1;
-    bottom:125%;left:50%;transform:translateX(-50%);
-    opacity:0;transition:opacity 0.3s;
+  .burn-chart {
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap:8px; margin-top:10px;
   }
-  .tooltip:hover .tooltiptext{visibility:visible;opacity:1;}
-  .burn-chart{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));
-    gap:8px;margin-top:10px;
+  .burn-area {
+    background:#fdf4ff; border:1px solid #e9d5ff; border-radius:8px;
+    padding:10px; text-align:center; cursor:pointer; font-size:12px;
   }
-  .burn-area{
-    background:#fdf4ff;
-    border:1px solid #e9d5ff;
-    border-radius:10px;
-    padding:10px;text-align:center;
-    cursor:pointer;
-    transition:all .25s ease;
-  }
-  .burn-area.active{
-    background:#c084fc;color:#fff;border:none;
-    transform:scale(1.03);
-  }
-  .alert{
-    border-radius:10px;padding:10px;margin-top:12px;display:flex;
-    align-items:center;gap:8px;font-weight:500;
-  }
-  .low{background:#ecfdf5;border:1px solid #bbf7d0;color:#065f46;}
-  .medium{background:#fefce8;border:1px solid #fde68a;color:#92400e;}
-  .high{background:#fdf2f8;border:1px solid #fbcfe8;color:#9d174d;}
-  .reco{
-    background:rgba(99,102,241,0.06);
-    border-left:4px solid #a78bfa;
-    border-radius:10px;
-    padding:10px 14px;
-    margin-top:10px;
-    color:#3f3f46;
-    font-size:14px;
-  }
-  footer{text-align:center;margin:20px;color:var(--muted);font-size:13px;}
+  .burn-area.active { background:var(--grad); color:#fff; border:none; }
+  .alert { border-radius:10px; padding:12px; margin-top:15px; display:flex; align-items:center; gap:8px; font-weight:600; }
+  .low { background:#ecfdf5; border:1px solid #bbf7d0; color:#065f46; }
+  .medium { background:#fefce8; border:1px solid #fde68a; color:#92400e; }
+  .high { background:#fdf2f8; border:1px solid #fbcfe8; color:#9d174d; }
+  .case-scenario { background:#f0f9ff; border-left:4px solid #0ea5e9; padding:15px; border-radius:8px; margin-bottom:15px; font-style: italic; font-size:14px; }
+  footer{ text-align:center; padding:20px; color:var(--muted); font-size:12px; }
 </style>
 </head>
 <body>
+
 <header>
-  <h1>Kalkulator Risiko Syok Hipovolemik</h1>
-  <div>Prototipe Modern</div>
+  <h1>Resusitasi Luka Bakar & Syok</h1>
+  <div style="font-size:11px;">Parkland & Lund-Browder</div>
 </header>
 
-<!-- Main Tabs -->
 <div class="tabs">
-  <button class="tab active" id="tabCalc"><i data-lucide="activity"></i> Kalkulator</button>
-  <button class="tab" id="tabCase"><i data-lucide="file-text"></i> Kasus Klinis</button>
+  <button class="tab active" onclick="switchTab('calc')"><i data-lucide="calculator"></i> Kalkulator</button>
+  <button class="tab" onclick="switchTab('case')"><i data-lucide="book-open"></i> Kasus Klinis</button>
 </div>
 
-<!-- Kalkulator -->
-<div id="contentCalc" class="tab-content">
-  <div class="container card">
-    <h2>Perhitungan Cairan & Risiko Klinis</h2>
+<div id="tab-calc" class="container">
+  <div class="card">
+    <label>Nama Pasien</label>
+    <input type="text" id="nameMain">
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+      <div>
+        <label>Umur (Tahun)</label>
+        <input type="number" id="ageMain" value="25" oninput="renderBurnAreas('main')">
+      </div>
+      <div>
+        <label>Tipe Pasien</label>
+        <select id="typeMain" onchange="renderBurnAreas('main')">
+          <option value="dewasa">Dewasa</option>
+          <option value="anak">Anak</option>
+        </select>
+      </div>
+    </div>
 
-    <label>nama pasien</label>
-    <input id="alphabet">
-    </select>
+    <label>Pilih Area Luka Bakar (TBSA)</label>
+    <div id="chartMain" class="burn-chart"></div>
+    <div style="background:#f3f4f6; padding:8px; border-radius:8px; margin-top:10px; text-align:center; font-weight:bold;">
+      Total TBSA: <span id="tbsaMain" style="color:#ec4899;">0%</span>
+    </div>
 
-    <label>umur pasien</label>
-    <input id="number">
-    </select>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+      <div><label>BB (kg)</label><input type="number" id="weightMain"></div>
+      <div><label>TD (Sistol)</label><input type="number" id="tdMain"></div>
+      <div><label>Nadi (bpm)</label><input type="number" id="hrMain"></div>
+    </div>
 
-    <label>Jenis Pasien</label>
-    <select id="patientType">
-      <option value="dewasa">Dewasa</option>
-      <option value="anak">Anak</option>
-    </select>
-
-    <h3 style="margin-top:12px;">Presentasi Luka Bakar</h3>
-    <div id="burnChart" class="burn-chart"></div>
-    <p><small>Total TBSA Terpilih: <b id="tbsaDisplay">0%</b></small></p>
-
-    <label>Berat Badan (kg)</label>
-    <input type="number" id="weight" placeholder="70" />
-
-    <label>Tekanan Darah (mmHg)</label>
-    <input type="number" id="td" placeholder="95" />
-
-    <label>Nadi (bpm)</label>
-    <input type="number" id="hr" placeholder="120" />
-
-    <button class="btn" id="calcBtn"><i data-lucide="calculator"></i> Hitung</button>
-
-    <div id="resultArea" style="margin-top:14px;font-weight:500"></div>
-    <div id="riskArea"></div>
-    <div id="recoArea"></div>
-  </div>
-</div>
-
-<!-- Kasus Klinis -->
-<div id="contentCase" class="tab-content hidden">
-  <div class="sub-tabs">
-    <button class="sub-tab active" id="subAdult"><i data-lucide="user"></i> Dewasa</button>
-    <button class="sub-tab" id="subChild"><i data-lucide="baby"></i> Anak</button>
-  </div>
-
-  <div id="caseAdult" class="container card">
-    <h2>Kasus Klinis Dewasa</h2>
-    <p>Seorang pria 35 tahun datang dengan luka bakar pada dada dan paha kiri. TD 95/60 mmHg, nadi 120 bpm, diuresis 25 ml/jam.</p>
-    <label>Nama Pasien</label><input />
-    <label>Berat Badan (kg)</label><input type="number" id="adultWeight" />
-    <label>%TBSA</label><input type="number" id="adultTbsa" />
-    <label>TD Sistolik (mmHg)</label><input type="number" id="adultTd" />
-    <label>Nadi (bpm)</label><input type="number" id="adultHr" />
-    <button class="btn" id="adultCalc"><i data-lucide="calculator"></i> Hitung Jawaban</button>
-    <div id="adultResult"></div>
-    <div id="adultRisk"></div>
-    <div id="adultReco"></div>
-  </div>
-
-  <div id="caseChild" class="container card hidden">
-    <h2>Kasus Klinis Anak</h2>
-    <p>Anak laki-laki 7 tahun mengalami luka bakar pada dada dan perut. TD 90/55 mmHg, nadi 130 bpm, diuresis 20 ml/jam.</p>
-    <label>Nama Pasien</label><input />
-    <label>Berat Badan (kg)</label><input type="number" id="childWeight" />
-    <label>%TBSA</label><input type="number" id="childTbsa" />
-    <label>TD Sistolik (mmHg)</label><input type="number" id="childTd" />
-    <label>Nadi (bpm)</label><input type="number" id="childHr" />
-    <button class="btn" id="childCalc"><i data-lucide="calculator"></i> Hitung Jawaban</button>
-    <div id="childResult"></div>
-    <div id="childRisk"></div>
-    <div id="childReco"></div>
+    <button class="btn" onclick="calculate('main')">HITUNG CAIRAN</button>
+    
+    <div id="resMain" class="hidden">
+      <div id="fluidMain" style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:10px; margin-top:15px;"></div>
+      <div id="riskMain"></div>
+    </div>
   </div>
 </div>
 
-<footer>© 2025 kalkulator medis — Nur Rahma Kamilasari</footer>
+<div id="tab-case" class="container hidden">
+  <div class="card">
+    <div class="case-scenario">
+      <strong>Kasus Dewasa:</strong> Pria 35 tahun, BB 70kg, luka bakar pada dada, perut, dan seluruh tungkai kanan setelah ledakan gas. TD 95/60 mmHg, Nadi 115x/menit.
+    </div>
+    <label>Pilih Area Sesuai Kasus</label>
+    <div id="chartAdultCase" class="burn-chart"></div>
+    <div style="background:#f3f4f6; padding:8px; border-radius:8px; margin-top:10px; text-align:center; font-weight:bold;">
+      TBSA Kasus: <span id="tbsaAdultCase" style="color:#ec4899;">0%</span>
+    </div>
+    <button class="btn" onclick="calculate('adultCase', 70, 95, 115, 'dewasa')">CEK JAWABAN KASUS DEWASA</button>
+    <div id="resAdultCase" class="hidden">
+        <div id="fluidAdultCase" style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:10px; margin-top:15px;"></div>
+        <div id="riskAdultCase"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="case-scenario">
+      <strong>Kasus Anak:</strong> Balita 3 tahun, BB 15kg, terkena air panas di seluruh kepala dan kedua tangan (lengan depan). TD 90/60 mmHg, Nadi 130x/menit.
+    </div>
+    <label>Pilih Area Sesuai Kasus</label>
+    <div id="chartChildCase" class="burn-chart"></div>
+    <div style="background:#f3f4f6; padding:8px; border-radius:8px; margin-top:10px; text-align:center; font-weight:bold;">
+      TBSA Kasus: <span id="tbsaChildCase" style="color:#ec4899;">0%</span>
+    </div>
+    <button class="btn" onclick="calculate('childCase', 15, 90, 130, 'anak')">CEK JAWABAN KASUS ANAK</button>
+    <div id="resChildCase" class="hidden">
+        <div id="fluidChildCase" style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:10px; margin-top:15px;"></div>
+        <div id="riskChildCase"></div>
+    </div>
+  </div>
+</div>
+
+<footer>© 2025 Kalkulator Medis — Nur Rahma Kamilasari</footer>
 
 <script>
   lucide.createIcons();
 
-  // Tab Navigation
-  const tabCalc=document.getElementById("tabCalc");
-  const tabCase=document.getElementById("tabCase");
-  const contentCalc=document.getElementById("contentCalc");
-  const contentCase=document.getElementById("contentCase");
-  tabCalc.addEventListener("click",()=>switchTab(false));
-  tabCase.addEventListener("click",()=>switchTab(true));
+  let dataStore = {
+    main: { selected: {} },
+    adultCase: { selected: {} },
+    childCase: { selected: {} }
+  };
 
-  function switchTab(toCase){
-    document.body.style.opacity='0';
-    setTimeout(()=>{
-      if(toCase){
-        tabCase.classList.add("active");
-        tabCalc.classList.remove("active");
-        contentCase.classList.remove("hidden");
-        contentCalc.classList.add("hidden");
-      }else{
-        tabCalc.classList.add("active");
-        tabCase.classList.remove("active");
-        contentCalc.classList.remove("hidden");
-        contentCase.classList.add("hidden");
-      }
-      document.body.style.opacity='1';
-    },200);
+  const getLundBrowder = (age) => {
+    if (age < 1) return { kepala: 19, kaki: 13 };
+    if (age < 5) return { kepala: 17, kaki: 13 };
+    if (age < 10) return { kepala: 13, kaki: 14 };
+    if (age < 15) return { kepala: 11, kaki: 16 };
+    return { kepala: 9, kaki: 18 };
+  };
+
+  function switchTab(tab) {
+    document.getElementById('tab-calc').classList.toggle('hidden', tab !== 'calc');
+    document.getElementById('tab-case').classList.toggle('hidden', tab !== 'case');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.currentTarget.classList.add('active');
   }
 
-  // Sub-tabs
-  const subAdult=document.getElementById("subAdult");
-  const subChild=document.getElementById("subChild");
-  const caseAdult=document.getElementById("caseAdult");
-  const caseChild=document.getElementById("caseChild");
-  subAdult.addEventListener("click",()=>switchSub(false));
-  subChild.addEventListener("click",()=>switchSub(true));
-  function switchSub(toChild){
-    caseAdult.classList.toggle("hidden",toChild);
-    caseChild.classList.toggle("hidden",!toChild);
-    subAdult.classList.toggle("active",!toChild);
-    subChild.classList.toggle("active",toChild);
-  }
+  function renderBurnAreas(target, forceType = null, forceAge = null) {
+    const container = document.getElementById('chart' + target.charAt(0).toUpperCase() + target.slice(1));
+    const tbsaLabel = document.getElementById('tbsa' + target.charAt(0).toUpperCase() + target.slice(1));
+    const type = forceType || document.getElementById('typeMain').value;
+    const age = forceAge || parseFloat(document.getElementById('ageMain').value) || 0;
+    
+    container.innerHTML = "";
+    dataStore[target].selected = {};
+    tbsaLabel.textContent = "0%";
 
-  // Rule of Nines & Lund-Browder simplified
-  const burnChart=document.getElementById("burnChart");
-  const tbsaDisplay=document.getElementById("tbsaDisplay");
-  const adultAreas={
-    "Kepala":9,"Dada":9,"Perut":9,"Punggung":18,"Lengan Kanan":9,"Lengan Kiri":9,"Tungkai Kanan":18,"Tungkai Kiri":18,"Perineum":1
-  };
-  const childAreas={
-    "Kepala":18,"Dada":9,"Perut":9,"Punggung":18,"Lengan Kanan":9,"Lengan Kiri":9,"Tungkai Kanan":14,"Tungkai Kiri":14
-  };
-  let selectedAreas={};
+    let areas = {};
+    if (type === 'dewasa') {
+      areas = {
+        "Kepala (9%)":9, "Dada (9%)":9, "Perut (9%)":9, "Punggung Atas (9%)":9, "Punggung Bawah (9%)":9,
+        "Lengan Ka Dp (4.5%)":4.5, "Lengan Ka Bk (4.5%)":4.5, "Lengan Ki Dp (4.5%)":4.5, "Lengan Ki Bk (4.5%)":4.5,
+        "Tungkai Ka Dp (9%)":9, "Tungkai Ka Bk (9%)":9, "Tungkai Ki Dp (9%)":9, "Tungkai Ki Bk (9%)":9, "Genital (1%)":1
+      };
+    } else {
+      const lb = getLundBrowder(age);
+      areas = {
+        [`Kepala (${lb.kepala}%)`]:lb.kepala, "Dada (9%)":9, "Perut (9%)":9, "Punggung Atas (9%)":9, "Punggung Bawah (9%)":9,
+        "Lengan Kanan (9%)":9, "Lengan Kiri (9%)":9, [`Tungkai Ka (${lb.kaki}%)`]:lb.kaki, [`Tungkai Ki (${lb.kaki}%)`]:lb.kaki, "Genital (1%)":1
+      };
+    }
 
-  function renderBurnAreas(){
-    burnChart.innerHTML="";
-    const type=document.getElementById("patientType").value;
-    const areas=type==="anak"?childAreas:adultAreas;
-    Object.entries(areas).forEach(([name,val])=>{
-      const div=document.createElement("div");
-      div.className="burn-area";
-      div.innerHTML=`${name}<br><small>${val}%</small>`;
-      div.addEventListener("click",()=>{
-        if(selectedAreas[name]) delete selectedAreas[name];
-        else selectedAreas[name]=val;
-        div.classList.toggle("active");
-        updateTBSA();
-      });
-      burnChart.appendChild(div);
+    Object.entries(areas).forEach(([name, val]) => {
+      const div = document.createElement("div");
+      div.className = "burn-area";
+      div.innerHTML = `<b>${name}</b>`;
+      div.onclick = () => {
+        if (dataStore[target].selected[name]) {
+          delete dataStore[target].selected[name];
+          div.classList.remove("active");
+        } else {
+          dataStore[target].selected[name] = val;
+          div.classList.add("active");
+        }
+        const total = Object.values(dataStore[target].selected).reduce((a, b) => a + b, 0);
+        tbsaLabel.textContent = total.toFixed(1) + "%";
+      };
+      container.appendChild(div);
     });
   }
 
-  function updateTBSA(){
-    const total=Object.values(selectedAreas).reduce((a,b)=>a+b,0);
-    tbsaDisplay.textContent=total+"%";
+  function calculate(target, fWeight=null, fTd=null, fHr=null, fType=null) {
+    const w = fWeight || parseFloat(document.getElementById('weightMain').value) || 0;
+    const td = fTd || parseFloat(document.getElementById('tdMain').value) || 0;
+    const hr = fHr || parseFloat(document.getElementById('hrMain').value) || 0;
+    const type = fType || document.getElementById('typeMain').value;
+    const tbsa = Object.values(dataStore[target].selected).reduce((a, b) => a + b, 0);
+
+    if (w === 0 || tbsa === 0) return alert("Lengkapi data Berat Badan dan Area Luka!");
+
+    const totalFluid = (type === 'dewasa' ? 4 : 3) * w * tbsa;
+    
+    const resDiv = document.getElementById('res' + target.charAt(0).toUpperCase() + target.slice(1));
+    const fluidDiv = document.getElementById('fluid' + target.charAt(0).toUpperCase() + target.slice(1));
+    const riskDiv = document.getElementById('risk' + target.charAt(0).toUpperCase() + target.slice(1));
+
+    resDiv.classList.remove('hidden');
+    fluidDiv.innerHTML = `
+      <strong>Hasil Perhitungan Parkland:</strong><br>
+      Total 24 Jam: <b style="font-size:18px;">${totalFluid.toLocaleString()} ml</b><br>
+      <small>8 Jam Pertama: <b>${(totalFluid/2).toLocaleString()} ml</b></small><br>
+      <small>16 Jam Berikutnya: <b>${(totalFluid/2).toLocaleString()} ml</b></small>
+    `;
+
+    let riskCls = "low", riskText = "Risiko Rendah Syok";
+    if (tbsa >= 20 || td < 90 || hr > 120) { riskCls = "high"; riskText = "RISIKO TINGGI SYOK"; }
+    else if (tbsa >= 10 || (td <= 100) || (hr >= 100)) { riskCls = "medium"; riskText = "Risiko Sedang Syok"; }
+
+    riskDiv.innerHTML = `<div class="alert ${riskCls}">${riskText}</div>`;
   }
 
-  document.getElementById("patientType").addEventListener("change",()=>{
-    selectedAreas={};
-    renderBurnAreas();
-    updateTBSA();
-  });
-
-  renderBurnAreas();
-
-  // Core Calculation
-  function evaluateRisk(tbsa, td, hr, target, recoTarget){
-    let riskLevel="low";
-    if(tbsa>=20 || td<90 || hr>120) riskLevel="high";
-    else if(tbsa>=10 || (td>=90 && td<=100) || (hr>=100 && hr<=120)) riskLevel="medium";
-
-    let icon="check-circle", text="Risiko rendah syok hipovolemik", cls="low", reco="";
-    if(riskLevel==="medium"){
-      icon="alert-circle";text="Risiko sedang syok hipovolemik";cls="medium";
-      reco="<div class='reco'><i data-lucide='stethoscope'></i> Pantau tanda vital tiap 30 menit, pasang infus, dan catat diuresis secara berkala.</div>";
-    }
-    if(riskLevel==="high"){
-      icon="alert-triangle";text="Risiko tinggi syok hipovolemik";cls="high";
-      reco="<div class='reco'><i data-lucide='thermometer'></i> Lakukan resusitasi cairan segera, pasang dua jalur IV besar, monitor urine output, dan siapkan rujukan bila perlu.</div>";
-    }
-    if(riskLevel==="low"){
-      reco="<div class='reco'><i data-lucide='clipboard-check'></i> Lanjutkan observasi ketat dan hidrasi oral sesuai kebutuhan pasien.</div>";
-    }
-    document.getElementById(target).innerHTML=`<div class='alert ${cls}'><i data-lucide='${icon}'></i> ${text}</div>`;
-    document.getElementById(recoTarget).innerHTML=reco;
-    lucide.createIcons();
-  }
-
-  function calcFluid(weight, tbsa, type){
-    return (type==="dewasa"?4:3)*weight*tbsa;
-  }
-
-  // Kalkulator utama
-  document.getElementById("calcBtn").addEventListener("click",()=>{
-    const w=+weight.value||0;
-    const type=patientType.value;
-    const tbsa=parseFloat(tbsaDisplay.textContent)||0;
-    const td=+document.getElementById("td").value||0;
-    const hr=+document.getElementById("hr").value||0;
-    const total=calcFluid(w,tbsa,type);
-    resultArea.innerHTML=`
-      <div>Total cairan 24 jam: <b>${total.toLocaleString()} ml</b></div>
-      <div>0–8 jam pertama: <b>${(total/2).toLocaleString()} ml</b></div>
-      <div>8–24 jam berikutnya: <b>${(total/2).toLocaleString()} ml</b></div>`;
-    evaluateRisk(tbsa,td,hr,"riskArea","recoArea");
-  });
-
-  // Kasus Dewasa
-  document.getElementById("adultCalc").addEventListener("click",()=>{
-    const w=+adultWeight.value||0,t=+adultTbsa.value||0,td=+adultTd.value||0,hr=+adultHr.value||0;
-    const total=calcFluid(w,t,"dewasa");
-    adultResult.innerHTML=`<div><b>Total cairan 24 jam:</b> ${total.toLocaleString()} ml</div>
-    <div>0–8 jam: ${(total/2).toLocaleString()} ml</div>
-    <div>8–24 jam: ${(total/2).toLocaleString()} ml</div>`;
-    evaluateRisk(t,td,hr,"adultRisk","adultReco");
-  });
-
-  // Kasus Anak
-  document.getElementById("childCalc").addEventListener("click",()=>{
-    const w=+childWeight.value||0,t=+childTbsa.value||0,td=+childTd.value||0,hr=+childHr.value||0;
-    const total=calcFluid(w,t,"anak");
-    childResult.innerHTML=`<div><b>Total cairan 24 jam:</b> ${total.toLocaleString()} ml</div>
-    <div>0–8 jam: ${(total/2).toLocaleString()} ml</div>
-    <div>8–24 jam: ${(total/2).toLocaleString()} ml</div>`;
-    evaluateRisk(t,td,hr,"childRisk","childReco");
-  });
-  
+  // Init
+  renderBurnAreas('main');
+  renderBurnAreas('adultCase', 'dewasa', 35);
+  renderBurnAreas('childCase', 'anak', 3);
 </script>
+
 </body>
 </html>
