@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Kalkulator Medis Resusitasi Cairan</title>
-<script src="https://unpkg.com/lucide@latest"></script>
+<title>Kalkulator Deteksi Risiko Syok Hipovolemik</title>
+<script defer src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
 <style>
   :root{
     --grad: linear-gradient(135deg, #a78bfa, #ec4899, #60a5fa);
@@ -14,248 +14,425 @@
   }
   body{
     font-family:'Inter',sans-serif;
-    background:var(--bg); color:#111; margin:0;
-    transition: opacity 0.3s ease;
+    background:var(--bg);
+    color:#111;
+    margin:0;
   }
   header{
-    background:var(--grad); color:#fff; padding:16px 24px;
+    background:var(--grad);
+    color:#fff;
+    padding:16px 24px;
     box-shadow:0 4px 20px rgba(0,0,0,0.15);
-    display:flex; justify-content:space-between; align-items:center;
+    display:flex;justify-content:space-between;align-items:center;
   }
-  h1{font-size:18px; margin:0}
-  .tabs{
-    display:flex; justify-content:center; gap:8px; background:#f4f0ff; padding:10px;
-  }
-  .tab{
-    border:none; border-radius:12px; padding:10px 18px;
-    cursor:pointer; background:#fff; color:var(--muted);
-    box-shadow:0 2px 6px rgba(0,0,0,0.05);
-    display:flex; align-items:center; gap:6px; transition:0.3s;
-  }
-  .tab.active{ background:var(--grad); color:#fff; }
-  .container{ max-width:900px; margin:20px auto; padding:0 16px; }
+  h1{font-size:20px;margin:0}
+  .container{max-width:950px;margin:20px auto;padding:0 16px;}
   .card{
-    background:var(--card); border-radius:14px; padding:20px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.08); margin-bottom: 20px;
+    background:var(--card);border-radius:14px;padding:20px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
   }
-  .hidden { display: none; }
-  label{ display:block; font-size:13px; margin-top:12px; color:var(--muted); font-weight:600; }
-  input, select{
-    width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; margin-top:5px; box-sizing: border-box;
+  label{display:block;font-size:14px;margin-top:10px;color:var(--muted)}
+  input,select{
+    width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin-top:5px;box-sizing: border-box;
+  }
+  .button-group {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
   }
   .btn{
-    background:var(--grad); color:#fff; border:none; border-radius:10px; padding:12px;
-    display:flex; align-items:center; gap:6px; cursor:pointer; margin-top:15px;
-    width:100%; justify-content:center; font-weight:bold;
+    color:#fff;border:none;border-radius:10px;padding:12px 14px;
+    display:flex;align-items:center;gap:6px;cursor:pointer;
+    transition:transform .2s; font-weight: 600; justify-content: center;
   }
-  .burn-chart {
-    display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap:8px; margin-top:10px;
+  .btn-calc { background:var(--grad); box-shadow:0 4px 10px rgba(167,139,250,0.3); }
+  .btn-reset { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+  .btn:hover{transform:scale(1.02)}
+  
+  .burn-chart{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));
+    gap:8px;margin-top:10px;
   }
-  .burn-area {
-    background:#fdf4ff; border:1px solid #e9d5ff; border-radius:8px;
-    padding:10px; text-align:center; cursor:pointer; font-size:12px;
+  .burn-area{
+    background:#fdf4ff; border:1px solid #e9d5ff; border-radius:10px;
+    padding:10px;text-align:center; cursor:pointer; transition:all .25s ease; font-size: 12px;
   }
-  .burn-area.active { background:var(--grad); color:#fff; border:none; }
-  .alert { border-radius:10px; padding:12px; margin-top:15px; display:flex; align-items:center; gap:8px; font-weight:600; }
-  .low { background:#ecfdf5; border:1px solid #bbf7d0; color:#065f46; }
-  .medium { background:#fefce8; border:1px solid #fde68a; color:#92400e; }
-  .high { background:#fdf2f8; border:1px solid #fbcfe8; color:#9d174d; }
-  .case-scenario { background:#f0f9ff; border-left:4px solid #0ea5e9; padding:15px; border-radius:8px; margin-bottom:15px; font-style: italic; font-size:14px; }
-  footer{ text-align:center; padding:20px; color:var(--muted); font-size:12px; }
+  .burn-area.active{ background:#c084fc;color:#fff;border:none; transform:scale(1.03); }
+  
+  .emergency-banner{
+    background: linear-gradient(90deg, #7f1d1d, #dc2626);
+    color: white; padding: 16px; border-radius: 14px; font-weight: 800;
+    text-align: center; margin-bottom: 12px; animation: blinkEmergency 1s infinite;
+  }
+  @keyframes blinkEmergency{ 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+  .symptom-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 5px;
+  }
+  .check-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #334155; cursor: pointer; }
+  .check-item input { width: auto; margin: 3px 0 0 0; }
+  
+  footer{text-align:center;margin:40px;color:var(--muted);font-size:13px;}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Resusitasi Luka Bakar & Syok</h1>
-  <div style="font-size:11px;">Parkland & Lund-Browder</div>
+  <h1>Kalkulator Risiko Syok Hipovolemik</h1>
+  <div>Final Prototype</div>
 </header>
 
-<div class="tabs">
-  <button class="tab active" onclick="switchTab('calc')"><i data-lucide="calculator"></i> Kalkulator</button>
-  <button class="tab" onclick="switchTab('case')"><i data-lucide="book-open"></i> Kasus Klinis</button>
-</div>
-
-<div id="tab-calc" class="container">
+<div class="container">
   <div class="card">
+    <h2>Data Pasien & Klinis</h2>
+
     <label>Nama Pasien</label>
-    <input type="text" id="nameMain">
-    
+    <input id="patientName" placeholder="Masukkan nama pasien...">
+
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
       <div>
         <label>Umur (Tahun)</label>
-        <input type="number" id="ageMain" value="25" oninput="renderBurnAreas('main')">
+        <input type="number" id="ageInput" placeholder="25">
       </div>
       <div>
-        <label>Tipe Pasien</label>
-        <select id="typeMain" onchange="renderBurnAreas('main')">
+        <label>Kategori</label>
+        <select id="patientType">
           <option value="dewasa">Dewasa</option>
           <option value="anak">Anak</option>
         </select>
       </div>
     </div>
 
-    <label>Pilih Area Luka Bakar (TBSA)</label>
-    <div id="chartMain" class="burn-chart"></div>
-    <div style="background:#f3f4f6; padding:8px; border-radius:8px; margin-top:10px; text-align:center; font-weight:bold;">
-      Total TBSA: <span id="tbsaMain" style="color:#ec4899;">0%</span>
+    <h3 style="margin-top:18px;">Presentasi Luka Bakar (TBSA)</h3>
+    <div id="burnChart" class="burn-chart"></div>
+    <p><small>Total TBSA Terpilih: <b id="tbsaDisplay">0%</b></small></p>
+
+    <label>Berat Badan (kg)</label>
+    <input type="number" id="weight" placeholder="70" />
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+      <div>
+        <label>TD Sistolik (mmHg)</label>
+        <input type="number" id="td_sys" placeholder="120" />
+      </div>
+      <div>
+        <label>TD Diastolik (mmHg)</label>
+        <input type="number" id="td_dia" placeholder="80" />
+      </div>
     </div>
 
+    <div style="margin-top: 15px; padding: 12px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 14px; color: var(--muted);">Mean Arterial Pressure (MAP):</span>
+        <b id="mapDisplay" style="font-size: 16px;">- mmHg</b>
+      </div>
+      <div id="mapStatus" style="font-size: 12px; margin-top: 4px; font-weight: 700;"></div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+      <div>
+        <label>Nadi (bpm)</label>
+        <input type="number" id="hr" placeholder="80" />
+      </div>
+      <div>
+        <label>Urine Output (ml/jam)</label>
+        <input type="number" id="urine" placeholder="35" />
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+      <div>
+        <label>RR (x/menit)</label>
+        <input type="number" id="rr" placeholder="18" />
+      </div>
+      <div>
+        <label>Perfusi Kapiler (CRT)</label>
+        <select id="crt">
+          <option value="1">Normal (< 2 detik)</option>
+          <option value="2">Lambat (2 - 4 detik)</option>
+          <option value="3">Sangat Lambat (> 4 detik)</option>
+        </select>
+      </div>
+    </div>
+
+    <h3>Status Kesadaran (GCS)</h3>
     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-      <div><label>BB (kg)</label><input type="number" id="weightMain"></div>
-      <div><label>TD (Sistol)</label><input type="number" id="tdMain"></div>
-      <div><label>Nadi (bpm)</label><input type="number" id="hrMain"></div>
+      <div>
+        <label>Eye</label>
+        <select id="gcs_eye">
+          <option class="adult" value="4">Spontan</option>
+          <option class="adult" value="3">Suara</option>
+          <option class="adult" value="2">Nyeri</option>
+          <option class="adult" value="1">Tidak ada</option>
+        </select>
+      </div>
+      <div>
+        <label>Verbal</label>
+        <select id="gcs_verbal">
+          <option class="adult" value="5">Orientasi baik</option>
+          <option class="adult" value="4">Bingung</option>
+          <option class="adult" value="3">Tidak nyambung</option>
+          <option class="adult" value="2">Mengerang</option>
+          <option class="adult" value="1">Tidak ada</option>
+        </select>
+      </div>
+      <div>
+        <label>Motor</label>
+        <select id="gcs_motor">
+          <option class="adult" value="6">Ikuti perintah</option>
+          <option class="adult" value="5">Lokalisir nyeri</option>
+          <option class="adult" value="4">Menarik dari nyeri</option>
+          <option class="adult" value="3">Fleksi abnormal</option>
+          <option class="adult" value="2">Ekstensi abnormal</option>
+          <option class="adult" value="1">Tidak ada</option>
+        </select>
+      </div>
     </div>
 
-    <button class="btn" onclick="calculate('main')">HITUNG CAIRAN</button>
-    
-    <div id="resMain" class="hidden">
-      <div id="fluidMain" style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:10px; margin-top:15px;"></div>
-      <div id="riskMain"></div>
+    <h3 style="margin-top:18px;">Tanda & Gejala Klinis</h3>
+    <div class="symptom-grid">
+      <label class="check-item"><input type="checkbox" class="symptom" value="kulit"> Akral dingin dan pucat</label>
+      <label class="check-item"><input type="checkbox" class="symptom" value="bibir"> Bibir kering / mukosa mulut kering</label>
+      <label class="check-item"><input type="checkbox" class="symptom" value="lemah"> Lemah / Lesu</label>
+      <label class="check-item"><input type="checkbox" class="symptom" value="sianosis"> Tampak kebiruan / sianosis</label>
+      <label class="check-item"><input type="checkbox" class="symptom" value="haus"> Rasa haus berlebihan / Polidipsia</label>
+      <label class="check-item"><input type="checkbox" class="symptom" value="kesadaran"> Gelisah, bingung, atau mengantuk</label>
+      <label class="check-item"><input type="checkbox" class="symptom" value="nadi_halus"> Nadi teraba cepat dan halus</label>
+      <label class="check-item"><input type="checkbox" class="symptom" value="napas_dangkal"> Takipnea / napas cepat dangkal</label>
     </div>
+
+    <div class="button-group">
+      <button class="btn btn-calc" id="calcBtn"><i data-lucide="calculator"></i> Hitung Hasil</button>
+      <button class="btn btn-reset" id="resetBtn"><i data-lucide="refresh-cw"></i> Reset</button>
+    </div>
+
+    <div id="resultArea" style="margin-top:20px; font-weight:500;"></div>
+    <div id="riskArea"></div>
   </div>
 </div>
 
-<div id="tab-case" class="container hidden">
-  <div class="card">
-    <div class="case-scenario">
-      <strong>Kasus Dewasa:</strong> Pria 35 tahun, BB 70kg, luka bakar pada dada, perut, dan seluruh tungkai kanan setelah ledakan gas. TD 95/60 mmHg, Nadi 115x/menit.
-    </div>
-    <label>Pilih Area Sesuai Kasus</label>
-    <div id="chartAdultCase" class="burn-chart"></div>
-    <div style="background:#f3f4f6; padding:8px; border-radius:8px; margin-top:10px; text-align:center; font-weight:bold;">
-      TBSA Kasus: <span id="tbsaAdultCase" style="color:#ec4899;">0%</span>
-    </div>
-    <button class="btn" onclick="calculate('adultCase', 70, 95, 115, 'dewasa')">CEK JAWABAN KASUS DEWASA</button>
-    <div id="resAdultCase" class="hidden">
-        <div id="fluidAdultCase" style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:10px; margin-top:15px;"></div>
-        <div id="riskAdultCase"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="case-scenario">
-      <strong>Kasus Anak:</strong> Balita 3 tahun, BB 15kg, terkena air panas di seluruh kepala dan kedua tangan (lengan depan). TD 90/60 mmHg, Nadi 130x/menit.
-    </div>
-    <label>Pilih Area Sesuai Kasus</label>
-    <div id="chartChildCase" class="burn-chart"></div>
-    <div style="background:#f3f4f6; padding:8px; border-radius:8px; margin-top:10px; text-align:center; font-weight:bold;">
-      TBSA Kasus: <span id="tbsaChildCase" style="color:#ec4899;">0%</span>
-    </div>
-    <button class="btn" onclick="calculate('childCase', 15, 90, 130, 'anak')">CEK JAWABAN KASUS ANAK</button>
-    <div id="resChildCase" class="hidden">
-        <div id="fluidChildCase" style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:10px; margin-top:15px;"></div>
-        <div id="riskChildCase"></div>
-    </div>
-  </div>
-</div>
-
-<footer>© 2025 Kalkulator Medis — Nur Rahma Kamilasari</footer>
+<footer>© 2025 kalkulator medis — Nur Rahma Kamilasari</footer>
 
 <script>
-  lucide.createIcons();
+  if (window.lucide) { lucide.createIcons(); }
 
-  let dataStore = {
-    main: { selected: {} },
-    adultCase: { selected: {} },
-    childCase: { selected: {} }
-  };
+  const burnChart = document.getElementById("burnChart");
+  const tbsaDisplay = document.getElementById("tbsaDisplay");
+  let selectedAreas = new Map();
 
   const getLundBrowder = (age) => {
-    if (age < 1) return { kepala: 19, kaki: 13 };
-    if (age < 5) return { kepala: 17, kaki: 13 };
-    if (age < 10) return { kepala: 13, kaki: 14 };
-    if (age < 15) return { kepala: 11, kaki: 16 };
-    return { kepala: 9, kaki: 18 };
+    if (age < 1) return { kepala: 19, paha: 5, betis: 5 };
+    if (age <= 4) return { kepala: 17, paha: 6, betis: 5 };
+    if (age <= 9) return { kepala: 13, paha: 8, betis: 5 };
+    if (age <= 15) return { kepala: 10, paha: 8, betis: 6 };
+    return { kepala: 9, paha: 9, betis: 9 };
   };
 
-  function switchTab(tab) {
-    document.getElementById('tab-calc').classList.toggle('hidden', tab !== 'calc');
-    document.getElementById('tab-case').classList.toggle('hidden', tab !== 'case');
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-  }
-
-  function renderBurnAreas(target, forceType = null, forceAge = null) {
-    const container = document.getElementById('chart' + target.charAt(0).toUpperCase() + target.slice(1));
-    const tbsaLabel = document.getElementById('tbsa' + target.charAt(0).toUpperCase() + target.slice(1));
-    const type = forceType || document.getElementById('typeMain').value;
-    const age = forceAge || parseFloat(document.getElementById('ageMain').value) || 0;
-    
-    container.innerHTML = "";
-    dataStore[target].selected = {};
-    tbsaLabel.textContent = "0%";
-
+  function renderBurnAreas() {
+    burnChart.innerHTML = "";
+    const type = document.getElementById("patientType").value;
+    const age = parseFloat(document.getElementById("ageInput").value) || 0;
     let areas = {};
-    if (type === 'dewasa') {
+
+    if (type === "dewasa") {
       areas = {
-        "Kepala (9%)":9, "Dada (9%)":9, "Perut (9%)":9, "Punggung Atas (9%)":9, "Punggung Bawah (9%)":9,
-        "Lengan Ka Dp (4.5%)":4.5, "Lengan Ka Bk (4.5%)":4.5, "Lengan Ki Dp (4.5%)":4.5, "Lengan Ki Bk (4.5%)":4.5,
-        "Tungkai Ka Dp (9%)":9, "Tungkai Ka Bk (9%)":9, "Tungkai Ki Dp (9%)":9, "Tungkai Ki Bk (9%)":9, "Genital (1%)":1
+        kepala: { label: "Kepala", value: 9 }, dada: { label: "Dada", value: 9 },
+        perut: { label: "Perut", value: 9 }, pungAtas: { label: "Punggung Atas", value: 9 },
+        pungBawah: { label: "Punggung Bawah", value: 9 }, lengKa: { label: "Lengan Ka", value: 9 },
+        lengKi: { label: "Lengan Ki", value: 9 }, tungkaiKa: { label: "Tungkai Ka", value: 18 },
+        tungkaiKi: { label: "Tungkai Ki", value: 18 }, genitalia: { label: "Genitalia", value: 1 }
       };
     } else {
       const lb = getLundBrowder(age);
       areas = {
-        [`Kepala (${lb.kepala}%)`]:lb.kepala, "Dada (9%)":9, "Perut (9%)":9, "Punggung Atas (9%)":9, "Punggung Bawah (9%)":9,
-        "Lengan Kanan (9%)":9, "Lengan Kiri (9%)":9, [`Tungkai Ka (${lb.kaki}%)`]:lb.kaki, [`Tungkai Ki (${lb.kaki}%)`]:lb.kaki, "Genital (1%)":1
+        kepala: { label: "Kepala", value: lb.kepala }, badanDepan: { label: "Badan Depan", value: 18 },
+        badanBelak: { label: "Badan Belakang", value: 18 }, lenganKa: { label: "Lengan Ka", value: 9 },
+        lenganKi: { label: "Lengan Ki", value: 9 }, pahaKa: { label: "Paha Ka", value: lb.paha },
+        pahaKi: { label: "Paha Ki", value: lb.paha }, betisKa: { label: "Betis Ka", value: lb.betis },
+        betisKi: { label: "Betis Ki", value: lb.betis }, genitalia: { label: "Genitalia", value: 1 }
       };
     }
 
-    Object.entries(areas).forEach(([name, val]) => {
+    Object.entries(areas).forEach(([key, data]) => {
       const div = document.createElement("div");
-      div.className = "burn-area";
-      div.innerHTML = `<b>${name}</b>`;
+      div.className = "burn-area" + (selectedAreas.has(key) ? " active" : "");
+      div.innerHTML = `${data.label}<br><small>${data.value}%</small>`;
       div.onclick = () => {
-        if (dataStore[target].selected[name]) {
-          delete dataStore[target].selected[name];
-          div.classList.remove("active");
-        } else {
-          dataStore[target].selected[name] = val;
-          div.classList.add("active");
-        }
-        const total = Object.values(dataStore[target].selected).reduce((a, b) => a + b, 0);
-        tbsaLabel.textContent = total.toFixed(1) + "%";
+        selectedAreas.has(key) ? selectedAreas.delete(key) : selectedAreas.set(key, data.value);
+        renderBurnAreas();
+        updateTBSA();
       };
-      container.appendChild(div);
+      burnChart.appendChild(div);
     });
   }
 
-  function calculate(target, fWeight=null, fTd=null, fHr=null, fType=null) {
-    const w = fWeight || parseFloat(document.getElementById('weightMain').value) || 0;
-    const td = fTd || parseFloat(document.getElementById('tdMain').value) || 0;
-    const hr = fHr || parseFloat(document.getElementById('hrMain').value) || 0;
-    const type = fType || document.getElementById('typeMain').value;
-    const tbsa = Object.values(dataStore[target].selected).reduce((a, b) => a + b, 0);
-
-    if (w === 0 || tbsa === 0) return alert("Lengkapi data Berat Badan dan Area Luka!");
-
-    const totalFluid = (type === 'dewasa' ? 4 : 3) * w * tbsa;
-    
-    const resDiv = document.getElementById('res' + target.charAt(0).toUpperCase() + target.slice(1));
-    const fluidDiv = document.getElementById('fluid' + target.charAt(0).toUpperCase() + target.slice(1));
-    const riskDiv = document.getElementById('risk' + target.charAt(0).toUpperCase() + target.slice(1));
-
-    resDiv.classList.remove('hidden');
-    fluidDiv.innerHTML = `
-      <strong>Hasil Perhitungan Parkland:</strong><br>
-      Total 24 Jam: <b style="font-size:18px;">${totalFluid.toLocaleString()} ml</b><br>
-      <small>8 Jam Pertama: <b>${(totalFluid/2).toLocaleString()} ml</b></small><br>
-      <small>16 Jam Berikutnya: <b>${(totalFluid/2).toLocaleString()} ml</b></small>
-    `;
-
-    let riskCls = "low", riskText = "Risiko Rendah Syok";
-    if (tbsa >= 20 || td < 90 || hr > 120) { riskCls = "high"; riskText = "RISIKO TINGGI SYOK"; }
-    else if (tbsa >= 10 || (td <= 100) || (hr >= 100)) { riskCls = "medium"; riskText = "Risiko Sedang Syok"; }
-
-    riskDiv.innerHTML = `<div class="alert ${riskCls}">${riskText}</div>`;
+  function updateTBSA() {
+    let total = 0;
+    selectedAreas.forEach(v => total += v);
+    tbsaDisplay.textContent = total.toFixed(1) + "%";
+    return total;
   }
 
-  // Init
-  renderBurnAreas('main');
-  renderBurnAreas('adultCase', 'dewasa', 35);
-  renderBurnAreas('childCase', 'anak', 3);
-</script>
+  function updateMAP() {
+    const sys = parseFloat(document.getElementById("td_sys").value);
+    const dia = parseFloat(document.getElementById("td_dia").value);
+    const mapDisplay = document.getElementById("mapDisplay");
+    const mapStatus = document.getElementById("mapStatus");
 
+    if (sys > 0 && dia > 0) {
+      const map = (sys + (2 * dia)) / 3;
+      mapDisplay.textContent = Math.round(map) + " mmHg";
+      if (map < 65) { mapStatus.textContent = "🔴 Hipoperfusi - Syok"; mapStatus.style.color = "#9d174d"; }
+      else { mapStatus.textContent = "🟢 Normal"; mapStatus.style.color = "#065f46"; }
+    } else { mapDisplay.textContent = "- mmHg"; mapStatus.textContent = ""; }
+  }
+
+  document.getElementById("td_sys").oninput = updateMAP;
+  document.getElementById("td_dia").oninput = updateMAP;
+  document.getElementById("patientType").onchange = () => { selectedAreas.clear(); updateTBSA(); renderBurnAreas(); };
+  document.getElementById("ageInput").oninput = renderBurnAreas;
+
+  document.getElementById("calcBtn").onclick = () => {
+    const name = document.getElementById("patientName").value;
+    const w = parseFloat(document.getElementById("weight").value);
+    const sys = parseInt(document.getElementById("td_sys").value);
+    const hr = parseInt(document.getElementById("hr").value);
+    const urine = parseInt(document.getElementById("urine").value);
+    const tbsa = updateTBSA();
+    
+    const checkedSymptoms = document.querySelectorAll('.symptom:checked');
+    const symptomCount = checkedSymptoms.length;
+    const crt = parseInt(document.getElementById("crt").value);
+    const gcs = parseInt(document.getElementById("gcs_eye").value) + 
+                parseInt(document.getElementById("gcs_verbal").value) + 
+                parseInt(document.getElementById("gcs_motor").value);
+
+    const resArea = document.getElementById("resultArea");
+    const riskArea = document.getElementById("riskArea");
+
+    // VALIDASI KETAT: Hasil tidak muncul jika ada data krusial yang kosong atau gejala belum dipilih
+    if(!name || !w || !sys || !hr || !urine || symptomCount === 0 || tbsa === 0) { 
+        alert("Lengkapi semua data");
+        resArea.innerHTML = ""; 
+        riskArea.innerHTML = ""; 
+        return; 
+    }
+
+    let shock = { 
+        stage: "Stage I (Kompensasi)", 
+        color: "#065f46", 
+        style: "background:#ecfdf5;color:#065f46;", 
+        desc: "Volume darah berkurang <15%. Tubuh masih mampu mengompensasi. Pantau intake-output." 
+    };
+
+    // Logika Penentuan Stage Berdasarkan ATLS & Keparahan Gejala
+    if (sys < 80 || gcs <= 8 || crt === 3 || urine < 10 || symptomCount >= 6) {
+        shock = { stage: "Stage IV (Syok Refrakter)", color: "#7f1d1d", style: "background:#fef2f2;color:#991b1b;", desc: "Syok sangat berat (>40% volume hilang). Risiko gagal organ multipel. Resusitasi segera!" };
+    } else if (sys < 90 || hr > 120 || crt === 2 || symptomCount >= 4 || gcs <= 12) {
+        shock = { stage: "Stage III (Syok Dekompensasi)", color: "#9d174d", style: "background:#fff1f2;color:#9d174d;", desc: "Hipotensi nyata (30-40% volume hilang). Butuh loading cairan kristaloid cepat." };
+    } else if (hr > 100 || symptomCount >= 1) {
+        shock = { stage: "Stage II (Syok Ringan)", color: "#92400e", style: "background:#fffbeb;color:#92400e;", desc: "Takikardia terdeteksi (15-30% volume hilang). Pasien mulai merasa haus dan gelisah." };
+    }
+
+    const totalFluid = 4 * w * tbsa; // Rumus Parkland
+
+    resArea.innerHTML = `
+      <div style="padding:15px; border-radius:12px; border-left:6px solid ${shock.color}; ${shock.style} margin-bottom:15px;">
+        <div style="text-transform:uppercase; font-size:11px; font-weight:700; margin-bottom:4px;">Klasifikasi Klinis:</div>
+        <b style="font-size:18px;">${shock.stage}</b>
+        <p style="margin:5px 0 0 0; font-size:13px;">${shock.desc}</p>
+      </div>
+      
+      <div style="padding:18px; background:var(--grad); color:white; border-radius:14px; box-shadow: 0 4px 15px rgba(167,139,250,0.4);">
+        <div style="font-size:13px; opacity:0.9; margin-bottom:4px;">Kebutuhan Cairan Parkland (24 Jam):</div>
+        <div style="font-size:28px; font-weight:800;">${totalFluid.toLocaleString()} <span style="font-size:16px; font-weight:400;">ml</span></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:12px; border-top:1px solid rgba(255,255,255,0.3); padding-top:12px;">
+          <div><div style="font-size:11px; opacity:0.8;">8 Jam Pertama</div><div style="font-size:16px; font-weight:700;">${(totalFluid/2).toLocaleString()} ml</div></div>
+          <div><div style="font-size:11px; opacity:0.8;">16 Jam Berikutnya</div><div style="font-size:16px; font-weight:700;">${(totalFluid/2).toLocaleString()} ml</div></div>
+        </div>
+      </div>
+    `;
+
+    // --- TAMBAHKAN KODE INI ---
+    if (tbsa > 15) {
+        const warningDiv = document.createElement("div");
+        warningDiv.style = "margin-top: 10px; padding: 12px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; font-size: 12px; color: #9f1239; line-height:1.4;";
+        warningDiv.innerHTML = `<b>⚠️ Kewaspadaan Klinis:</b> Luas luka bakar > 15% berisiko tinggi menyebabkan sindrom respons inflamasi sistemik (SIRS). Pantau ketat tanda-tanda syok distributif tambahan.`;
+        resArea.appendChild(warningDiv);
+    }
+    // --------------------------
+    
+    riskArea.innerHTML = (shock.stage.includes("III") || shock.stage.includes("IV")) ? 
+      `<div class="emergency-banner" style="margin-top:15px;">🚨 TINDAKAN RESUSITASI SEGERA DIBUTUHKAN 🚨</div>` : "";
+  };
+
+  document.getElementById("resetBtn").onclick = () => { location.reload(); };
+  window.onload = () => { renderBurnAreas(); };
+
+  <!-- PENAMBAHAN FITUR: Disclaimer, Validasi Urin & Penyesuaian Parameter Anak -->
+
+
+(function() {
+    // 1. Menambahkan Disclaimer di bawah footer untuk keamanan medis
+    const footer = document.querySelector('footer');
+    const disclaimer = document.createElement('div');
+    disclaimer.innerHTML = `
+        <div style="max-width:950px; margin: 20px auto; padding: 15px; background: #fff4e5; border: 1px solid #ff9800; border-radius: 10px; font-size: 11px; color: #663c00; line-height: 1.4;">
+            <b>PENTING:</b> Kalkulator ini adalah alat bantu simulasi dan tidak menggantikan pertimbangan klinis dokter. 
+            Resusitasi cairan harus disesuaikan dengan keadaan aktual pasien (comorbid, trauma inhalasi, dll). 
+            Target urine output dewasa: 0.5 ml/kg/jam, Anak: 1 ml/kg/jam.
+        </div>
+    `;
+    footer.parentNode.insertBefore(disclaimer, footer);
+
+    // 2. Interceptor pada Tombol Hitung untuk menambahkan info Urine per KG
+    const originalCalc = document.getElementById("calcBtn").onclick;
+    document.getElementById("calcBtn").onclick = function() {
+        // Jalankan fungsi asli dulu
+        originalCalc();
+
+        // Ambil data berat dan urine
+        const w = parseFloat(document.getElementById("weight").value);
+        const urine = parseFloat(document.getElementById("urine").value);
+        const patientType = document.getElementById("patientType").value;
+        const resArea = document.getElementById("resultArea");
+
+        if (w > 0 && urine > 0 && resArea.innerHTML !== "") {
+            const uKilo = (urine / w).toFixed(2);
+            let uStatus = (patientType === "dewasa" && uKilo >= 0.5) || (patientType === "anak" && uKilo >= 1) 
+                          ? "🟢 Adekuat" : "🔴 Kurang (Risiko Gagal Ginjal)";
+
+            // Tambahkan info Urine Output ke dalam hasil
+            const uInfo = document.createElement("div");
+            uInfo.style = "margin-top: 10px; padding: 10px; background: #f1f5f9; border-radius: 8px; font-size: 13px; border: 1px solid #cbd5e1;";
+            uInfo.innerHTML = `<b>Analisis Urine:</b> ${uKilo} ml/kg/jam <span style="float:right">${uStatus}</span>`;
+            resArea.appendChild(uInfo);
+        }
+    };
+
+    // 3. Menyesuaikan GCS Verbal otomatis jika kategori Anak dipilih
+    const pTypeSelect = document.getElementById("patientType");
+    const gcsVerbal = document.getElementById("gcs_verbal");
+    
+    pTypeSelect.addEventListener('change', function() {
+        if (this.value === "anak") {
+            gcsVerbal.options[0].text = "Mengoceh, interaksi sosial (+)";
+            gcsVerbal.options[1].text = "Menangis tapi bisa ditenangkan";
+            gcsVerbal.options[2].text = "Menangis terus, tidak tenang";
+            gcsVerbal.options[3].text = "Mengerang / merintih";
+            gcsVerbal.options[4].text = "Tidak ada respon";
+        } else {
+            gcsVerbal.options[0].text = "Orientasi baik";
+            gcsVerbal.options[1].text = "Bingung";
+            gcsVerbal.options[2].text = "Tidak nyambung";
+            gcsVerbal.options[3].text = "Mengerang";
+            gcsVerbal.options[4].text = "Tidak ada respon";
+        }
+    });
+})();
+
+</script>
 </body>
 </html>
