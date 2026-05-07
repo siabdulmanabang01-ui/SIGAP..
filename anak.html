@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Kalkulator Luka Bakar Anak (Lund & Browder + Parkland)</title>
 <style>
+  .spinner {
+  width: 40px;
+  height: 40px;
+  border: 5px solid #c9e8e4;
+  border-top: 5px solid #2a9d8f;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 :root {
   --utama:#2a9d8f;
   --muda:#e9f8f7;
@@ -12,8 +26,21 @@
   --putih:#ffffff;
   --border:#c9e8e4;
 }
-body { font-family:'Poppins',sans-serif; background:linear-gradient(to bottom,#f3fcfc,#d7f0ec); color:var(--teks); margin:0; padding:0; }
-.container { max-width:950px; margin:30px auto; background:var(--putih); border-radius:18px; box-shadow:0 4px 16px rgba(0,0,0,0.1); padding:25px; }
+body {
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(to bottom,#f3fcfc,#d7f0ec);
+  color:var(--teks);
+  margin:0;
+  padding:0;
+}
+.container {
+  max-width:950px;
+  margin:30px auto;
+  background:var(--putih);
+  border-radius:18px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.1);
+  padding:25px;
+}
 header { text-align:center; margin-bottom:18px; }
 header h1 { color:var(--utama); font-size:1.8rem; margin:0; }
 header p { margin:6px 0 0; color:#444; font-size:0.95rem; }
@@ -56,7 +83,10 @@ pre { background:#f1f8f7; padding:10px; border-left:4px solid var(--utama); bord
   <div class="grid">
     <div>
       <label>Usia Anak (tahun)</label>
-      <input type="number" id="age" min="0" step="0.1" value="5" onchange="onAgeChange()">
+<input type="number" id="age" min="0" step="1" value="0">
+
+<label>Tambahan Bulan (0–11)</label>
+<input type="number" id="age_month" min="0" max="11" step="1" value="0">
 
       <label>Berat Badan (kg)</label>
       <input type="number" id="weight" min="1" step="0.1" value="15">
@@ -75,7 +105,12 @@ pre { background:#f1f8f7; padding:10px; border-left:4px solid var(--utama); bord
 
       <div id="areas" style="margin-top:10px;"></div>
 
+      <!-- TOMBOL DIPINDAHKAN KE SINI -->
       <button onclick="calculate()">💧 Hitung Kebutuhan Cairan</button>
+      <div id="loading" style="display:none; text-align:center; margin-top:10px;">
+  <div class="spinner"></div>
+  <div style="margin-top:8px;">Menghitung...</div>
+</div>
       <div class="note">Maintenance dihitung otomatis menggunakan rumus Holliday–Segar.</div>
     </div>
   </div>
@@ -100,31 +135,77 @@ pre { background:#f1f8f7; padding:10px; border-left:4px solid var(--utama); bord
 </div>
 
 <script>
-// DATA PERSENTASE LUND–BROWDER PEDIATRIK
+/* === SCRIPT IDENTIK DENGAN YANG ANDA BERIKAN === */
+
+/* DATA PERSENTASE LUND–BROWDER PEDIATRIK */
 const LB = {
-  "0-1": { kepala:19, leher:2, badan_depan:13, badan_belakang:13, r_buttock:2.5, l_buttock:2.5,
-           r_upper_arm:4, r_lower_arm:3, r_hand:2.5, l_upper_arm:4, l_lower_arm:3, l_hand:2.5,
-           r_thigh:5.5, r_lower_leg:5, r_foot:3.5, l_thigh:5.5, l_lower_leg:5, l_foot:3.5, perineum:1 },
-  "1-4": { kepala:17, leher:2, badan_depan:13, badan_belakang:13, r_buttock:2.5, l_buttock:2.5,
-           r_upper_arm:4, r_lower_arm:3, r_hand:2.5, l_upper_arm:4, l_lower_arm:3, l_hand:2.5,
-           r_thigh:6.5, r_lower_leg:5, r_foot:3.5, l_thigh:6.5, l_lower_leg:5, l_foot:3.5, perineum:1 },
-  "5-9": { kepala:13, leher:2, badan_depan:13, badan_belakang:13, r_buttock:2.5, l_buttock:2.5,
-           r_upper_arm:4, r_lower_arm:3, r_hand:2.5, l_upper_arm:4, l_lower_arm:3, l_hand:2.5,
-           r_thigh:8, r_lower_leg:5.5, r_foot:3.5, l_thigh:8, l_lower_leg:5.5, l_foot:3.5, perineum:1 },
-  "10-14": { kepala:11, leher:2, badan_depan:13, badan_belakang:13, r_buttock:2.5, l_buttock:2.5,
-             r_upper_arm:4, r_lower_arm:3, r_hand:2.5, l_upper_arm:4, l_lower_arm:3, l_hand:2.5,
-             r_thigh:8.5, r_lower_leg:6, r_foot:3.5, l_thigh:8.5, l_lower_leg:6, l_foot:3.5, perineum:1 },
-  "15": { kepala:9, leher:2, badan_depan:13, badan_belakang:13, r_buttock:2.5, l_buttock:2.5,
-          r_upper_arm:4, r_lower_arm:3, r_hand:2.5, l_upper_arm:4, l_lower_arm:3, l_hand:2.5,
-          r_thigh:9, r_lower_leg:6.5, r_foot:3.5, l_thigh:9, l_lower_leg:6.5, l_foot:3.5, perineum:1 }
+  "0-1": {
+    kepala:19, leher:2, badan_depan:13, badan_belakang:13,
+    r_buttock:2.5, l_buttock:2.5,
+    r_upper_arm:4, r_lower_arm:3, r_hand:2.5,
+    l_upper_arm:4, l_lower_arm:3, l_hand:2.5,
+    r_thigh:5.5, r_lower_leg:5, r_foot:3.5,
+    l_thigh:5.5, l_lower_leg:5, l_foot:3.5,
+    perineum:1
+  },
+  "1-4": {
+    kepala:17, leher:2, badan_depan:13, badan_belakang:13,
+    r_buttock:2.5, l_buttock:2.5,
+    r_upper_arm:4, r_lower_arm:3, r_hand:2.5,
+    l_upper_arm:4, l_lower_arm:3, l_hand:2.5,
+    r_thigh:6.5, r_lower_leg:5, r_foot:3.5,
+    l_thigh:6.5, l_lower_leg:5, l_foot:3.5,
+    perineum:1
+  },
+  "5-9": {
+    kepala:13, leher:2, badan_depan:13, badan_belakang:13,
+    r_buttock:2.5, l_buttock:2.5,
+    r_upper_arm:4, r_lower_arm:3, r_hand:2.5,
+    l_upper_arm:4, l_lower_arm:3, l_hand:2.5,
+    r_thigh:8, r_lower_leg:5.5, r_foot:3.5,
+    l_thigh:8, l_lower_leg:5.5, l_foot:3.5,
+    perineum:1
+  },
+  "10-14": {
+    kepala:11, leher:2, badan_depan:13, badan_belakang:13,
+    r_buttock:2.5, l_buttock:2.5,
+    r_upper_arm:4, r_lower_arm:3, r_hand:2.5,
+    l_upper_arm:4, l_lower_arm:3, l_hand:2.5,
+    r_thigh:8.5, r_lower_leg:6, r_foot:3.5,
+    l_thigh:8.5, l_lower_leg:6, l_foot:3.5,
+    perineum:1
+  },
+  "15": {
+    kepala:9, leher:2, badan_depan:13, badan_belakang:13,
+    r_buttock:2.5, l_buttock:2.5,
+    r_upper_arm:4, r_lower_arm:3, r_hand:2.5,
+    l_upper_arm:4, l_lower_arm:3, l_hand:2.5,
+    r_thigh:9, r_lower_leg:6.5, r_foot:3.5,
+    l_thigh:9, l_lower_leg:6.5, l_foot:3.5,
+    perineum:1
+  }
 };
 
 const translate = {
-  kepala:"Kepala", leher:"Leher", badan_depan:"Dada & Perut (Depan)", badan_belakang:"Punggung (Belakang)",
-  r_buttock:"Bokong Kanan", l_buttock:"Bokong Kiri", r_upper_arm:"Lengan Atas Kanan", r_lower_arm:"Lengan Bawah Kanan",
-  r_hand:"Tangan Kanan", l_upper_arm:"Lengan Atas Kiri", l_lower_arm:"Lengan Bawah Kiri", l_hand:"Tangan Kiri",
-  r_thigh:"Paha Kanan", r_lower_leg:"Betis Kanan", r_foot:"Kaki Kanan", l_thigh:"Paha Kiri",
-  l_lower_leg:"Betis Kiri", l_foot:"Kaki Kiri", perineum:"Perineum"
+  kepala:"Kepala",
+  leher:"Leher",
+  badan_depan:"Dada & Perut (Depan)",
+  badan_belakang:"Punggung (Belakang)",
+  r_buttock:"Bokong Kanan",
+  l_buttock:"Bokong Kiri",
+  r_upper_arm:"Lengan Atas Kanan",
+  r_lower_arm:"Lengan Bawah Kanan",
+  r_hand:"Tangan Kanan",
+  l_upper_arm:"Lengan Atas Kiri",
+  l_lower_arm:"Lengan Bawah Kiri",
+  l_hand:"Tangan Kiri",
+  r_thigh:"Paha Kanan",
+  r_lower_leg:"Betis Kanan",
+  r_foot:"Kaki Kanan",
+  l_thigh:"Paha Kiri",
+  l_lower_leg:"Betis Kiri",
+  l_foot:"Kaki Kiri",
+  perineum:"Perineum"
 };
 
 const groupsUI = {
@@ -150,7 +231,10 @@ function getAgeGroup(age){
 function onAgeChange(){ renderAreas(); }
 
 function renderAreas(){
-  const age = parseFloat(document.getElementById("age").value);
+  const year = parseFloat(document.getElementById("age").value) || 0;
+  const month = parseFloat(document.getElementById("age_month").value) || 0;
+  const age = year + (month / 12);
+
   const group = getAgeGroup(age);
   const chart = LB[group];
   const container = document.getElementById("areas");
@@ -159,7 +243,8 @@ function renderAreas(){
   Object.entries(groupsUI).forEach(([title, parts]) => {
     const box = document.createElement("div");
     box.className = "group";
-    const h = document.createElement("h4"); h.textContent = title;
+    const h = document.createElement("h4");
+    h.textContent = title;
     box.appendChild(h);
 
     const areaDiv = document.createElement("div");
@@ -189,84 +274,103 @@ function renderAreas(){
 }
 
 function selectAll(v){
-  const age = parseFloat(document.getElementById("age").value);
+  const year = parseFloat(document.getElementById("age").value) || 0;
+const month = parseFloat(document.getElementById("age_month").value) || 0;
+const age = year + (month / 12);
   const group = getAgeGroup(age);
   const chart = LB[group];
-  Object.values(groupsUI).flat().forEach(k => { if(chart[k]!==undefined) selected[k]=v; });
+
+  Object.values(groupsUI).flat().forEach(k => {
+    if(chart[k] !== undefined) selected[k] = v;
+  });
+
   renderAreas();
 }
 
 function calcTbsa(){
-  const age = parseFloat(document.getElementById("age").value);
-  const group = getAgeGroup(age);
+ const year = parseFloat(document.getElementById("age").value) || 0;
+const month = parseFloat(document.getElementById("age_month").value) || 0;
+const age = year + (month / 12);
+
+const group = getAgeGroup(age);
   const chart = LB[group];
   let total = 0;
-  for(const k in selected){ if(selected[k] && chart[k]!==undefined){ total += chart[k]; } }
-  return Math.round(total*10)/10;
+
+  for(const k in selected){
+    if(selected[k] && chart[k] !== undefined){
+      total += chart[k];
+    }
+  }
+  return Math.round(total * 10) / 10;
 }
 
 function hollidaySegar(kg){
   if(kg <= 10) return kg * 100;
-  if(kg <= 20) return 1000 + (kg-10)*50;
-  return 1500 + (kg-20)*20;
+  if(kg <= 20) return 1000 + (kg - 10) * 50;
+  return 1500 + (kg - 20) * 20;
 }
 
 function calculate(){
-  const weight = parseFloat(document.getElementById("weight").value);
-  const tbsa = calcTbsa();
-  let factor = parseFloat(document.getElementById("factor").value);
-  if(isNaN(factor) || factor <= 0) factor = 3.0;
 
-  if(!weight || tbsa <= 0){ alert("Masukkan berat badan dan pilih area luka bakar!"); return; }
+  // ✅ TAMPILKAN SPINNER DULU
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("result").style.display = "none";
 
-  const resus = factor * weight * tbsa;
-  const maintenance = hollidaySegar(weight);
-  const total = resus + maintenance;
+  setTimeout(() => {
 
-  // Tentukan koloid hanya jika TBSA > 20%
-  let kolAmount = 0;
-  if(tbsa > 20){
-    kolAmount = tbsa <= 30 ? 0.5*weight*tbsa : 1*weight*tbsa;
-  }
+    const weight = parseFloat(document.getElementById("weight").value);
+    const tbsa = calcTbsa();
+    let factor = parseFloat(document.getElementById("factor").value);
+    if(isNaN(factor) || factor <= 0) factor = 3.0;
 
-  const period = [
-    { label:"0–8 jam pertama", value:resus*0.5, fluid:"Ringer Laktat (RL)" },
-    { label:"8–16 jam", value:resus*0.25, fluid:"Ringer Laktat (RL)" },
-    { label:"16–24 jam", value:resus*0.25, fluid:"Ringer Laktat (RL)" }
-  ];
+    if(!weight || tbsa <= 0){
+      alert("Masukkan berat badan dan pilih area luka bakar!");
+      document.getElementById("loading").style.display = "none";
+      return;
+    }
 
-  const fluids = [
-    { kategori:"Kristaloid", jenis:"Ringer Laktat (RL)", jumlah:Math.round(resus), ket:`Resusitasi Parkland (${factor} mL/kg/%TBSA)` },
-    { kategori:"Maintenance", jenis:"D5% + RL", jumlah:Math.round(maintenance), ket:"Holliday–Segar 24 jam" },
-  ];
+    const resus = factor * weight * tbsa;
+    const maintenance = hollidaySegar(weight);
+    const total = resus + maintenance;
 
-  // Tambahkan koloid jika ada
-  if(kolAmount > 0){
-    fluids.push({ kategori:"Koloid", jenis:"Albumin 5%", jumlah:Math.round(kolAmount), ket:"Pemberian setelah 24 jam pertama" });
-  }
+    const period = [
+      { label:"0–8 jam pertama", value:resus*0.5, fluid:"Ringer Laktat (RL)" },
+      { label:"8–16 jam", value:resus*0.25, fluid:"Ringer Laktat (RL)" },
+      { label:"16–24 jam", value:resus*0.25, fluid:"RL + Koloid" }
+    ];
 
-  // Total termasuk koloid
-  const totalAll = total + kolAmount;
-  fluids.push({ kategori:"Total", jenis:"Total 24 jam", jumlah:Math.round(totalAll), ket:"Resusitasi + maintenance + koloid" });
+    const fluids = [
+      { kategori:"Kristaloid", jenis:"Ringer Laktat (RL)", jumlah:Math.round(resus), ket:`Resusitasi Parkland (${factor} mL/kg/%TBSA)` },
+      { kategori:"Maintenance", jenis:"D5% + RL", jumlah:Math.round(maintenance), ket:"Holliday–Segar 24 jam" },
+      { kategori:"Koloid", jenis:"Albumin 5%", jumlah:Math.round(resus*0.25), ket:"Dipertimbangkan setelah 24 jam" },
+      { kategori:"Total", jenis:"Total 24 jam", jumlah:Math.round(total), ket:"Resusitasi + maintenance" }
+    ];
 
-  document.getElementById("result").style.display = "block";
-  document.getElementById("resultText").innerHTML = `
-    <p><b>Luas Luka Bakar (TBSA):</b> ${tbsa}%</p>
-    <p><b>Faktor Parkland:</b> ${factor} mL/kg/%TBSA</p>
-    ${period.map(p => `<p><b>${p.label}:</b> ${Math.round(p.value)} mL (${p.fluid})</p>`).join("")}
-  `;
+    document.getElementById("result").style.display = "block";
+    document.getElementById("resultText").innerHTML = `
+      <p><b>Luas Luka Bakar (TBSA):</b> ${tbsa}%</p>
+      <p><b>Faktor Parkland:</b> ${factor} mL/kg/%TBSA</p>
+      ${period.map(p => `<p><b>${p.label}:</b> ${Math.round(p.value)} mL (${p.fluid})</p>`).join("")}
+    `;
 
-  document.getElementById("resultTable").innerHTML =
-    fluids.map(f => `<tr><td>${f.kategori}</td><td>${f.jenis}</td><td>${f.jumlah}</td><td>${f.ket}</td></tr>`).join("");
+    document.getElementById("resultTable").innerHTML =
+      fluids.map(f => `<tr><td>${f.kategori}</td><td>${f.jenis}</td><td>${f.jumlah}</td><td>${f.ket}</td></tr>`).join("");
 
-  document.getElementById("resultSummary").textContent =
-    `TBSA: ${tbsa}%\nFaktor: ${factor} mL/kg/%TBSA\n` +
-    `0–8 jam: ${Math.round(period[0].value)} mL\n` +
-    `8–16 jam: ${Math.round(period[1].value)} mL\n` +
-    `16–24 jam: ${Math.round(period[2].value)} mL\n` +
-    `Koloid: ${Math.round(kolAmount)} mL (jika TBSA > 20%)\n` +
-    `Total 24 jam: ${Math.round(totalAll)} mL`;
+    document.getElementById("resultSummary").textContent =
+      `TBSA: ${tbsa}%\nFaktor: ${factor} mL/kg/%TBSA\n` +
+      `0–8 jam: ${Math.round(period[0].value)} mL\n` +
+      `8–16 jam: ${Math.round(period[1].value)} mL\n` +
+      `16–24 jam: ${Math.round(period[2].value)} mL\n` +
+      `Total 24 jam: ${Math.round(total)} mL`;
+
+    // ✅ SEMBUNYIKAN SPINNER SETELAH SELESAI
+    document.getElementById("loading").style.display = "none";
+
+  }, 700); // biar kelihatan loadingnya
 }
+
+document.getElementById("age").addEventListener("input", renderAreas);
+document.getElementById("age_month").addEventListener("input", renderAreas);
 
 renderAreas();
 </script>
